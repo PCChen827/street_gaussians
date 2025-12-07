@@ -14,6 +14,10 @@
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
 #include "simple_knn.h"
+// Modification
+#include <cstdint>
+#include <float.h>
+// End modification
 #include <cub/cub.cuh>
 #include <cub/device/device_radix_sort.cuh>
 #include <vector>
