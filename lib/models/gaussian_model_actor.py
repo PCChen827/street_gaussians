@@ -240,14 +240,18 @@ class GaussianModelActor(GaussianModel):
                         
             samples_xyz = torch.matmul(rots, samples.unsqueeze(-1)).squeeze(-1) + origins # [N, M, 3]                    
             num_gaussians = self.get_xyz.shape[0]
-            points_inside_box = torch.logical_and(
-                torch.all((samples_xyz >= self.min_xyz).view(num_gaussians, -1), dim=-1),
-                torch.all((samples_xyz <= self.max_xyz).view(num_gaussians, -1), dim=-1),
-            )
-            points_outside_box = torch.logical_not(points_inside_box)           
-            
-            prune_mask = torch.logical_or(prune_mask, big_points_ws)
-            prune_mask = torch.logical_or(prune_mask, points_outside_box)
+
+            # Modification
+            if num_gaussians > 0:
+                points_inside_box = torch.logical_and(
+                    torch.all((samples_xyz >= self.min_xyz).view(num_gaussians, -1), dim=-1),
+                    torch.all((samples_xyz <= self.max_xyz).view(num_gaussians, -1), dim=-1),
+                )
+                points_outside_box = torch.logical_not(points_inside_box)           
+
+                prune_mask = torch.logical_or(prune_mask, big_points_ws)
+                prune_mask = torch.logical_or(prune_mask, points_outside_box)
+            # End Modification
             
         self.prune_points(prune_mask)
         
